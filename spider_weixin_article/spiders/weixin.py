@@ -5,8 +5,8 @@ import urllib
 import pydash
 import MySQLdb as mdb
 import scrapy
+import datetime
 from ..items import LSpiderArticleInfo
-
 
 class WeixinSpider(scrapy.Spider):
     name = "weixin"
@@ -140,7 +140,7 @@ class WeixinSpider(scrapy.Spider):
             print response.body
         else:
             article_list = json.loads(content['general_msg_list'])
-            now = int(time.time())
+            now = datetime.datetime.fromtimestamp(int(time.time())).strftime('%Y-%m-%d %H:%M:%S')
 
             for article in article_list['list']:
                 if article.has_key('app_msg_ext_info'):
@@ -156,7 +156,7 @@ class WeixinSpider(scrapy.Spider):
                         detail_url=article['app_msg_ext_info']['content_url'],
                         created_time=now,
                         update_time=now,
-                        published_time=article['comm_msg_info']['datetime'],
+                        published_time=datetime.datetime.fromtimestamp(article['comm_msg_info']['datetime']).strftime('%Y-%m-%d %H:%M:%S'),
                         custom_item_id='weixin_' +
                         str(article['comm_msg_info']['id']),
                     )
